@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moon AI Chatbot</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root{
+  --bg0:#04040e;--bg1:#09091d;--bg2:#0f0f2d;--bg3:#151548;
+  --bd:#1e1e55;--bd2:#2b2b70;
+  --t1:#eaeaf6;--t2:#9898be;--t3:#5c5c88;
+  --ac:#7c6cf0;--ac2:#b0a4ff;--acg:rgba(124,108,240,.25);
+  --gn:#10b981;--rd:#f87171;--yw:#fbbf24;--cy:#22d3ee;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg0);color:var(--t1);height:100vh;overflow:hidden}
+button{font-family:inherit}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:9px}
+
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+@keyframes td{0%,60%,100%{transform:translateY(0);opacity:.3}30%{transform:translateY(-7px);opacity:1}}
+@keyframes sr{from{transform:translateX(12px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes sl{from{transform:translateX(-12px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes su{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes sc{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes tw{0%,100%{opacity:.1}50%{opacity:.7}}
+@keyframes br{0%,100%{opacity:.06}50%{opacity:.12}}
+
+.moon{border-radius:50%;background:radial-gradient(circle at 32% 32%,#f4f4ff,#c8c8e0,#9898b8);box-shadow:0 0 28px rgba(200,200,240,.22),inset -9px -4px 14px rgba(50,50,90,.5);position:relative;flex-shrink:0}
+.moon::after{content:'';position:absolute;top:10px;left:13px;width:6px;height:6px;border-radius:50%;background:rgba(50,50,90,.17);box-shadow:13px 6px 0 2px rgba(50,50,90,.12),2px 18px 0 1px rgba(50,50,90,.09)}
+
+.dot1,.dot2,.dot3{width:7px;height:7px;border-radius:50%;background:var(--ac2);animation:td 1.4s ease-in-out infinite}
+.dot2{animation-delay:.18s}.dot3{animation-delay:.36s}
+.stcur::after{content:'\258C';color:var(--ac2);animation:sc .6s ease-in-out infinite}
+.star{position:absolute;border-radius:50%;background:#fff;animation:tw var(--d) ease-in-out infinite;animation-delay:var(--dl)}
+
+.msg-u{animation:sr .25s ease-out}.msg-a{animation:sl .25s ease-out}
+.msg-a .bbl{background:linear-gradient(145deg,var(--bg3),var(--bg2));border:1px solid var(--bd)}
+.msg-u .bbl{background:linear-gradient(135deg,var(--ac),#5f4fd8);border:1px solid rgba(176,164,255,.18)}
+
+.cb{background:#07071c;border:1px solid var(--bd);border-radius:9px;overflow:hidden;margin:10px 0;font-family:'JetBrains Mono',monospace;font-size:12.5px}
+.cb .ch{background:var(--bg2);padding:5px 11px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bd);font-size:11px;color:var(--t3)}
+.cb pre{padding:11px;overflow-x:auto;line-height:1.65;color:#c0c0e0;margin:0}
+.ck{color:#b0a4ff}.cs{color:#22d3ee}.cc{color:#4a4a70;font-style:italic}.cf{color:#fbbf24}.cn{color:#f87171}.ct{color:#10b981}
+
+.si{transition:all .2s;border:1px solid transparent;border-radius:11px}
+.si:hover{background:var(--bg2);border-color:var(--bd)}
+.si.on{background:var(--bg3);border-color:var(--ac);box-shadow:0 0 14px var(--acg)}
+
+.iw{background:var(--bg2);border:1.5px solid var(--bd);border-radius:16px;transition:border-color .25s,box-shadow .25s}
+.iw:focus-within{border-color:var(--ac);box-shadow:0 0 24px var(--acg)}
+.iw textarea{background:transparent;border:none;outline:none;color:var(--t1);resize:none;font-family:'Space Grotesk',sans-serif}
+
+.sb{background:linear-gradient(135deg,var(--ac),#5f4fd8);border:none;transition:all .2s;cursor:pointer}
+.sb:not(.off):hover{transform:scale(1.07);box-shadow:0 0 18px var(--acg)}
+.sb.off{opacity:.22;cursor:not-allowed;pointer-events:none}
+
+.mo{background:var(--bg2);border:1.5px solid var(--bd);border-radius:11px;padding:10px 12px;cursor:pointer;transition:all .2s}
+.mo:hover{border-color:var(--bd2)}.mo.pk{border-color:var(--ac);background:var(--bg3);box-shadow:0 0 12px var(--acg)}
+
+.sd{width:7px;height:7px;border-radius:50%;background:var(--gn);box-shadow:0 0 7px rgba(16,185,129,.45)}
+
+.sc{background:var(--bg2);border:1px solid var(--bd);border-radius:13px;padding:15px;cursor:pointer;transition:all .2s;text-align:left}
+.sc:hover{border-color:var(--ac);transform:translateY(-2px);box-shadow:0 5px 20px rgba(124,108,240,.1)}
+
+.tbl{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px}
+.tbl th{background:var(--bg2);padding:7px 11px;text-align:left;border:1px solid var(--bd);color:var(--ac2);font-weight:600}
+.tbl td{padding:6px 11px;border:1px solid var(--bd);color:var(--t2)}
+
+.toast{animation:su .25s ease-out}
+
+@media(max-width:768px){.sbar{display:none!important}.sbar.op{display:flex!important;position:fixed;z-index:55;inset:0;width:100%}}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<!-- BG -->
+<div style="position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none">
+  <div style="position:absolute;width:500px;height:500px;border-radius:50%;filter:blur(90px);opacity:.09;background:radial-gradient(circle,#7c6cf0,transparent);top:-170px;right:-50px;animation:br 8s ease-in-out infinite"></div>
+  <div style="position:absolute;width:380px;height:380px;border-radius:50%;filter:blur(80px);opacity:.07;background:radial-gradient(circle,#3b1f8e,transparent);bottom:-100px;left:-60px;animation:br 10s ease-in-out infinite 2s"></div>
+  <div id="sf"></div>
+</div>
+
+<!-- Toasts -->
+<div id="tbox" style="position:fixed;top:14px;right:14px;z-index:200;display:flex;flex-direction:column;gap:7px"></div>
+
+<!-- Settings Modal -->
+<div id="smod" style="display:none;position:fixed;inset:0;z-index:50;background:rgba(4,4,14,.82);backdrop-filter:blur(8px)" onclick="if(event.target===this)clSet()">
+  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--bg1);border:1px solid var(--bd);border-radius:18px;padding:24px;width:92%;max-width:480px;max-height:82vh;overflow-y:auto;animation:su .25s ease-out">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <h2 style="font-size:20px;font-weight:700">Settings</h2>
+      <button onclick="clSet()" style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--bg2);color:var(--t2);border:none;cursor:pointer"><i class="fas fa-times" style="font-size:13px"></i></button>
+    </div>
+    <div style="margin-bottom:18px">
+      <label style="display:block;font-size:13px;font-weight:500;color:var(--t2);margin-bottom:10px">AI Model</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px" id="mgrid"></div>
+    </div>
+    <div style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><label style="font-size:13px;font-weight:500;color:var(--t2)">Temperature</label><span id="tvE" style="font-size:13px;font-family:JetBrains Mono,monospace;color:var(--ac2)">0.7</span></div>
+      <input type="range" min="0" max="2" step="0.1" value="0.7" id="tvS" style="width:100%;accent-color:var(--ac)">
+    </div>
+    <div style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><label style="font-size:13px;font-weight:500;color:var(--t2)">Max Tokens</label><span id="tkE" style="font-size:13px;font-family:JetBrains Mono,monospace;color:var(--ac2)">4096</span></div>
+      <input type="range" min="256" max="8192" step="256" value="4096" id="tkS" style="width:100%;accent-color:var(--ac)">
+    </div>
+    <div style="margin-bottom:16px">
+      <label style="display:block;font-size:13px;font-weight:500;color:var(--t2);margin-bottom:6px">System Prompt</label>
+      <textarea id="spT" rows="3" style="width:100%;border-radius:11px;padding:10px;font-size:13px;background:var(--bg2);border:1px solid var(--bd);color:var(--t1);outline:none;resize:vertical;font-family:'Space Grotesk',sans-serif">You are Moon AI, a brilliant and concise assistant.</textarea>
+    </div>
+    <div style="padding:14px;border-radius:11px;background:rgba(248,113,113,.04);border:1px solid rgba(248,113,113,.14)">
+      <label style="display:block;font-size:13px;font-weight:500;color:var(--rd);margin-bottom:10px">Danger Zone</label>
+      <button onclick="clrAll()" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;background:rgba(248,113,113,.1);color:var(--rd);border:1px solid rgba(248,113,113,.18);cursor:pointer"><i class="fas fa-trash-alt" style="margin-right:6px"></i>Clear All Data</button>
+    </div>
+  </div>
+</div>
+
+<!-- Layout -->
+<div style="display:flex;height:100vh;position:relative;z-index:10">
+
+<!-- Sidebar -->
+<aside id="sb" class="sbar" style="width:272px;flex-shrink:0;display:flex;flex-direction:column;height:100%;background:var(--bg1);border-right:1px solid var(--bd)">
+  <div style="padding:16px;display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--bd)">
+    <div class="moon" style="width:32px;height:32px;animation:fl 7s ease-in-out infinite"></div>
+    <div><div style="font-weight:700;font-size:17px">Moon AI</div><div style="font-size:11px;color:var(--t3)">Full-Stack Chatbot</div></div>
+  </div>
+  <div style="padding:10px 12px">
+    <button onclick="nwCh()" style="width:100%;padding:10px 16px;border-radius:11px;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,var(--ac),#5f4fd8);color:#fff;border:none;cursor:pointer"><i class="fas fa-plus" style="font-size:11px"></i> New Chat</button>
+  </div>
+  <div style="padding:0 12px 8px">
+    <div style="position:relative"><i class="fas fa-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--t3)"></i>
+    <input type="text" placeholder="Search conversations..." id="sbox" oninput="rSb()" style="width:100%;padding:7px 10px 7px 30px;border-radius:8px;font-size:12px;background:var(--bg2);border:1px solid var(--bd);color:var(--t1);outline:none"></div>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:0 12px" id="clist"></div>
+  <div style="padding:10px 12px;border-top:1px solid var(--bd)">
+    <div style="display:flex;align-items:center;gap:10px;padding:8px;border-radius:11px;background:var(--bg2)">
+      <div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:linear-gradient(135deg,var(--ac),#5f4fd8);color:#fff">U</div>
+      <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500" class="truncate">User</div><div style="font-size:11px;color:var(--t3)">Free Plan</div></div>
+      <button onclick="opSet()" style="width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--t2);background:none;border:none;cursor:pointer" aria-label="Settings"><i class="fas fa-cog" style="font-size:13px"></i></button>
+    </div>
+  </div>
+</aside>
+
+<!-- Main -->
+<main style="flex:1;display:flex;flex-direction:column;height:100%;min-width:0">
+  <!-- Header -->
+  <header style="display:flex;align-items:center;justify-content:space-between;padding:10px 20px;flex-shrink:0;background:var(--bg1);border-bottom:1px solid var(--bd)">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button id="mbtn" onclick="document.getElementById('sb').classList.toggle('op')" style="display:none;width:32px;height:32px;border-radius:8px;align-items:center;justify-content:center;color:var(--t2);background:none;border:none;cursor:pointer" aria-label="Menu"><i class="fas fa-bars"></i></button>
+      <div>
+        <h2 id="htit" style="font-weight:600;font-size:14px">New Conversation</h2>
+        <div style="display:flex;align-items:center;gap:5px;margin-top:2px"><div class="sd" style="width:5px;height:5px"></div><span id="hmod" style="font-size:11px;color:var(--t3)">Moon 4o</span></div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span id="tkC" style="font-size:11px;padding:4px 10px;border-radius:6px;font-family:JetBrains Mono,monospace;background:var(--bg2);color:var(--t3);border:1px solid var(--bd)">0 tokens</span>
+      <button onclick="opSet()" style="width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--t2);background:none;border:none;cursor:pointer" aria-label="Settings"><i class="fas fa-sliders-h" style="font-size:13px"></i></button>
+    </div>
+  </header>
+
+  <!-- Messages -->
+  <div id="mscr" style="flex:1;overflow-y:auto">
+    <div id="marea" style="max-width:720px;margin:0 auto;padding:20px 16px">
+      <div id="wblk" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:58vh;text-align:center">
+        <div class="moon" style="width:70px;height:70px;margin-bottom:22px;animation:fl 7s ease-in-out infinite"></div>
+        <h2 style="font-size:28px;font-weight:800;margin-bottom:8px">Welcome to Moon AI</h2>
+        <p style="font-size:15px;margin-bottom:28px;max-width:400px;color:var(--t2)">Your full-stack AI companion. Start a conversation or try a suggestion below.</p>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;max-width:520px">
+          <div class="sc" onclick="useSug('Build a real-time chat app with Next.js 15 and WebSockets')"><i class="fas fa-bolt" style="font-size:16px;color:var(--yw);margin-bottom:8px;display:block"></i><p style="font-size:13px;font-weight:600">Build a real-time chat</p><p style="font-size:11px;color:var(--t3);margin-top:3px">Next.js 15 + WS</p></div>
+          <div class="sc" onclick="useSug('Write a Prisma schema for a SaaS multi-tenant app')"><i class="fas fa-database" style="font-size:16px;color:var(--gn);margin-bottom:8px;display:block"></i><p style="font-size:13px;font-weight:600">Design a SaaS schema</p><p style="font-size:11px;color:var(--t3);margin-top:3px">Prisma + PostgreSQL</p></div>
+          <div class="sc" onclick="useSug('Compare REST vs GraphQL vs tRPC for a new project')"><i class="fas fa-code-compare" style="font-size:16px;color:var(--cy);margin-bottom:8px;display:block"></i><p style="font-size:13px;font-weight:600">REST vs GraphQL vs tRPC</p><p style="font-size:11px;color:var(--t3);margin-top:3px">API comparison</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input -->
+  <div style="flex-shrink:0;padding:6px 16px 16px">
+    <div style="max-width:720px;margin:0 auto">
+      <div class="iw" style="position:relative">
+        <textarea id="minp" rows="1" placeholder="Message Moon AI..." style="width:100%;padding:13px 60px 13px 16px;font-size:14px;line-height:1.5;min-height:48px;max-height:170px"></textarea>
+        <div style="position:absolute;right:8px;bottom:8px">
+          <button id="sbtn" onclick="doSend()" class="sb off" style="width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center" aria-label="Send"><i class="fas fa-arrow-up" style="font-size:13px;color:#fff"></i></button>
+        </div>
+      </div>
+      <p style="text-align:center;font-size:11px;margin-top:8px;color:var(--t3)">Moon AI can make mistakes. Verify important information.</p>
+    </div>
+  </div>
+</main>
+</div>
+
+<script>
+/* ===== STATE ===== */
+var S = {
+  convos: [],
+  aid: null,
+  model: 'moon-4o',
+  temp: 0.7,
+  maxTk: 4096,
+  sys: 'You are Moon AI, a brilliant and concise assistant.',
+  strm: false,
+  ttk: 0
+};
+
+/* ===== DB ===== */
+function dbLoad() {
+  try {
+    var r = localStorage.getItem('moonai3');
+    if (r) {
+      var d = JSON.parse(r);
+      S.convos = d.c || [];
+      S.model = d.m || 'moon-4o';
+      S.temp = d.t != null ? d.t : 0.7;
+      S.maxTk = d.k != null ? d.k : 4096;
+      S.sys = d.s || S.sys;
+      S.ttk = d.tk || 0;
+    }
+  } catch(e) {}
+}
+function dbSave() {
+  try {
+    localStorage.setItem('moonai3', JSON.stringify({
+      c: S.convos, m: S.model, t: S.temp, k: S.maxTk, s: S.sys, tk: S.ttk
+    }));
+  } catch(e) {}
+}
+function dbNewConvo(title) {
+  var c = {
+    id: 'c' + Date.now() + Math.random().toString(36).slice(2,7),
+    title: title || 'New Conversation',
+    msgs: [],
+    model: S.model,
+    cat: Date.now(),
+    uat: Date.now()
+  };
+  S.convos.unshift(c);
+  dbSave();
+  return c;
+}
+function dbGet(id) {
+  for (var i = 0; i < S.convos.length; i++) {
+    if (S.convos[i].id === id) return S.convos[i];
+  }
+  return null;
+}
+function dbDel(id) {
+  S.convos = S.convos.filter(function(c) { return c.id !== id; });
+  dbSave();
+}
+function dbAddMsg(cid, role, content, tokens) {
+  var c = dbGet(cid);
+  if (!c) return null;
+  var m = {
+    id: 'm' + Date.now() + Math.random().toString(36).slice(2,5),
+    role: role,
+    content: content,
+    tokens: tokens || 0,
+    ts: Date.now()
+  };
+  c.msgs.push(m);
+  c.uat = Date.now();
+  if (role === 'user') {
+    var uc = 0;
+    for (var i = 0; i < c.msgs.length; i++) { if (c.msgs[i].role === 'user') uc++; }
+    if (uc === 1) c.title = content.length > 44 ? content.slice(0,44) + '...' : content;
+  }
+  dbSave();
+  return m;
+}
+
+/* ===== AI RESPONSE ENGINE ===== */
+function aiRespond(text) {
+  var lo = text.toLowerCase();
+  var tk = function() { return Math.floor(180 + Math.random() * 450); };
+
+  // Real-time chat + Next.js
+  if ((lo.indexOf('real-time') > -1 && lo.indexOf('chat') > -1) || (lo.indexOf('websocket') > -1 && lo.indexOf('next') > -1)) {
+    return { text: "Here's a production-grade real-time chat with Next.js 15:\n\n```typescript\n// app/api/chat/route.ts\nimport { NextRequest } from 'next/server';\n\nconst clients = new Map<string, ReadableStreamDefaultController>();\n\nexport async function POST(req: NextRequest) {\n  const { message, roomId, userId } = await req.json();\n  \n  // Persist to database\n  const msg = await prisma.message.create({\n    data: { content: message, roomId, userId }\n  });\n  \n  // Broadcast to all clients in room\n  const data = JSON.stringify({ type: 'message', ...msg });\n  clients.forEach((controller, key) => {\n    if (key.startsWith(roomId)) {\n      controller.enqueue(`data: ${data}\\n\\n`);\n    }\n  });\n  \n  return Response.json(msg);\n}\n\nexport async function GET(req: NextRequest) {\n  const roomId = req.nextUrl.searchParams.get('room');\n  const stream = new ReadableStream({\n    start(controller) {\n      clients.set(roomId + '_' + Date.now(), controller);\n    }\n  });\n  return new Response(stream, {\n    headers: { 'Content-Type': 'text/event-stream' }\n  });\n}\n```\n\n```typescript\n// hooks/use-chat-stream.ts\nimport { useEffect, useRef, useState } from 'react';\n\nexport function useChatStream(roomId: string) {\n  const [messages, setMessages] = useState<Message[]>([]);\n  const abortRef = useRef<AbortController | null>(null);\n\n  useEffect(() => {\n    const ac = new AbortController();\n    abortRef.current = ac;\n\n    fetch(`/api/chat?room=${roomId}`, { signal: ac.signal })\n      .then(res => {\n        const reader = res.body!.getReader();\n        const decoder = new TextDecoder();\n        \n        (async () => {\n          while (true) {\n            const { done, value } = await reader.read();\n            if (done) break;\n            const chunk = decoder.decode(value);\n            chunk.split('\\n\\n').forEach(part => {\n              if (part.startsWith('data: ')) {\n                const msg = JSON.parse(part.slice(6));\n                setMessages(prev => [...prev, msg]);\n              }\n            });\n          }\n        })();\n      });\n\n    return () => ac.abort();\n  }, [roomId]);\n\n  const send = async (content: string) => {\n    await fetch('/api/chat', {\n      method: 'POST',\n      headers: { 'Content-Type': 'application/json' },\n      body: JSON.stringify({ message: content, roomId, userId: 'me' })\n    });\n  };\n\n  return { messages, send };\n}\n```\n\n**Architecture:**\n\n| Layer | Tech | Purpose |\n|-------|------|--------|\n| Client | React + SSE hook | Real-time UI |\n| API | Next.js Route Handlers | SSE + message relay |\n| Database | Prisma + PostgreSQL | Message persistence |\n| Cache | Redis | Room state, rate limiting |\n\n**Production considerations:**\n- Use Redis pub/sub for multi-server deployments\n- Add heartbeat every 30s to detect stale connections\n- Rate limit: 5 messages/second per user\n- Persist messages asynchronously — don't block broadcast\n- Use Server Actions for loading message history", tokens: tk() };
+  }
+
+  // Prisma SaaS
+  if (lo.indexOf('prisma') > -1 && (lo.indexOf('saas') > -1 || lo.indexOf('multi') > -1 || lo.indexOf('schema') > -1 || lo.indexOf('tenant') > -1)) {
+    return { text: "Here's a complete Prisma schema for multi-tenant SaaS:\n\n```prisma\ngenerator client {\n  provider = \"prisma-client-js\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Tenant {\n  id        String   @id @default(cuid())\n  name      String\n  slug      String   @unique\n  plan      Plan     @default(FREE)\n  settings  Json     @default(\"{}\")\n  users     User[]\n  projects  Project[]\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n\nmodel User {\n  id       String   @id @default(cuid())\n  email    String\n  name     String\n  role     Role     @default(MEMBER)\n  tenantId String\n  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)\n  projects ProjectMember[]\n  createdAt DateTime @default(now())\n\n  @@unique([email, tenantId])\n  @@index([tenantId])\n}\n\nmodel Project {\n  id          String          @id @default(cuid())\n  name        String\n  description String?\n  tenantId    String\n  tenant      Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)\n  members     ProjectMember[]\n  tasks       Task[]\n  createdAt   DateTime        @default(now())\n  updatedAt   DateTime        @updatedAt\n\n  @@index([tenantId])\n}\n\nmodel Task {\n  id        String   @id @default(cuid())\n  title     String\n  status    Status   @default(TODO)\n  priority  Priority @default(MEDIUM)\n  projectId String\n  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([projectId])\n  @@index([status])\n}\n\nmodel ProjectMember {\n  userId    String\n  projectId String\n  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)\n  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)\n  role      ProjRole @default(VIEWER)\n\n  @@id([userId, projectId])\n}\n\nenum Plan     { FREE PRO ENTERPRISE }\nenum Role     { OWNER ADMIN MEMBER }\nenum ProjRole { OWNER EDITOR VIEWER }\nenum Status   { TODO IN_PROGRESS REVIEW DONE }\nenum Priority { LOW MEDIUM HIGH CRITICAL }\n```\n\n**Auto-tenant filtering with Prisma extensions:**\n\n```typescript\n// lib/prisma-tenant.ts\nimport { PrismaClient } from '@prisma/client';\n\nexport function tenantClient(tenantId: string) {\n  return new PrismaClient().$extends({\n    query: {\n      $allModels: {\n        async $allOperations({ args, query, model }) {\n          if (model !== 'Tenant') {\n            args.where = { ...args.where, tenantId };\n          }\n          return query(args);\n        },\n      },\n    },\n  });\n}\n```\n\n**Multi-tenancy strategies:**\n\n| Strategy | Isolation | Cost | Best For |\n|----------|----------|------|----------|\n| Row-Level (RLS) | Medium | Low | Most SaaS |\n| Schema-per-tenant | High | Medium | Enterprise |\n| DB-per-tenant | Highest | High | Healthcare, Finance |\n\nRow-level is the sweet spot for 90% of SaaS apps. Start there, migrate up only when a customer demands it and pays for it.", tokens: tk() };
+  }
+
+  // REST vs GraphQL vs tRPC
+  if ((lo.indexOf('rest') > -1 && lo.indexOf('graphql') > -1) || lo.indexOf('trpc') > -1) {
+    return { text: "REST vs GraphQL vs tRPC — the honest comparison:\n\n| Feature | REST | GraphQL | tRPC |\n|---------|------|---------|------|\n| Type Safety | OpenAPI codegen | Codegen required | End-to-end TS |\n| Over-fetching | Common | Solved | Solved |\n| Learning Curve | Low | Medium | Low (TS only) |\n| Caching | HTTP native | Complex | Standard |\n| Ecosystem | Massive | Large | Growing |\n| Client Agnostic | Yes | Yes | No (JS/TS) |\n| Performance | Good | N+1 risk | Excellent |\n\n**When to pick each:**\n\n**REST** — Public APIs, mobile clients, simple CRUD. HTTP caching works. Most battle-tested.\n\n```typescript\napp.get('/api/users/:id', async (req, res) => {\n  const user = await prisma.user.findUnique({\n    where: { id: req.params.id },\n    include: { posts: true }\n  });\n  res.json(user);\n});\n```\n\n**GraphQL** — Complex nested data, many client types, frontend team autonomy. Watch for N+1 — use DataLoader.\n\n```typescript\nconst resolvers = {\n  Query: {\n    user: (_, { id }) => prisma.user.findUnique({ where: { id } }),\n  },\n  User: {\n    posts: (parent) => prisma.post.findMany({ where: { authorId: parent.id } }),\n  }\n};\n```\n\n**tRPC** — Internal APIs, full-stack TypeScript, maximum velocity. Zero codegen.\n\n```typescript\n// Server\nexport const appRouter = router({\n  user: publicProcedure\n    .input(z.object({ id: z.string() }))\n    .query(({ input }) => prisma.user.findUnique({ where: { id: input.id } })),\n});\n\n// Client — fully typed automatically\nconst user = await trpc.user.query({ id: 'abc' });\n```\n\n**My rule of thumb:**\n- Solo/small TS team → tRPC\n- Public API or multi-platform → REST\n- Complex data, many clients → GraphQL\n\nYou can mix: tRPC internally, REST for public endpoints. Best of both worlds.", tokens: tk() };
+  }
+
+  // Debounce / TypeScript
+  if (lo.indexOf('debounce') > -1 || (lo.indexOf('typescript') > -1 && lo.indexOf('function') > -1)) {
+    return { text: "Production-grade debounce with full TypeScript safety:\n\n```typescript\ntype AnyFn = (...args: any[]) => any;\n\ninterface DebouncedFn<T extends AnyFn> {\n  (...args: Parameters<T>): void;\n  cancel: () => void;\n  flush: () => void;\n  pending: () => boolean;\n}\n\nfunction debounce<T extends AnyFn>(\n  fn: T,\n  delay: number,\n  opts: { leading?: boolean; trailing?: boolean } = {}\n): DebouncedFn<T> {\n  const { leading = false, trailing = true } = opts;\n  let timer: ReturnType<typeof setTimeout> | null = null;\n  let lastArgs: Parameters<T> | null = null;\n\n  const debounced = function(this: unknown, ...args: Parameters<T>) {\n    lastArgs = args;\n    if (timer) clearTimeout(timer);\n    if (leading && !timer) fn.apply(this, args);\n    timer = setTimeout(() => {\n      timer = null;\n      if (trailing && lastArgs) {\n        fn.apply(this, lastArgs);\n        lastArgs = null;\n      }\n    }, delay);\n  } as DebouncedFn<T>;\n\n  debounced.cancel = () => { if (timer) clearTimeout(timer); timer = null; lastArgs = null; };\n  debounced.flush = () => { if (timer && lastArgs) { fn.apply(this, lastArgs); debounced.cancel(); } };\n  debounced.pending = () => timer !== null;\n  return debounced;\n}\n```\n\n**Usage patterns:**\n\n```typescript\n// Search — trailing only (default)\nconst onSearch = debounce((q: string) => fetchResults(q), 300);\n\n// Save button — leading edge\nconst onSave = debounce(saveData, 1000, { leading: true, trailing: false });\n\n// Resize — both edges\nconst onResize = debounce(handleResize, 200, { leading: true, trailing: true });\n\n// Explicit control\nonSearch.cancel();\nonSearch.flush();\nonSearch.pending(); // boolean\n```\n\nWhy this over lodash: zero dependencies, ~35 lines, full TS generics, leading + trailing options, flush/cancel/pending. Everything you actually need.", tokens: tk() };
+  }
+
+  // Quantum
+  if (lo.indexOf('quantum') > -1) {
+    return { text: "Quantum computing, actually explained:\n\n**The core idea:** A classical bit is a coin lying flat — heads or tails. A qubit is a coin spinning in the air — both at once. This is **superposition**.\n\n**Three properties that matter:**\n\n**1. Superposition** — Exponential parallelism\n\n| Bits | Qubits |\n|------|--------|\n| 3 = 1 of 8 states | 3 = all 8 simultaneously |\n| 20 = 1 state | 20 = 1,048,576 states |\n| 300 = 1 state | 300 > atoms in universe |\n\n**2. Entanglement** — Measuring one qubit instantly reveals its entangled partner, regardless of distance. Einstein hated this (\"spooky action\"). But Bell's theorem proved it's real.\n\n**3. Interference** — Quantum algorithms amplify correct answers and cancel wrong ones. Like noise-canceling headphones for computation.\n\n**Real algorithms:**\n\n| Algorithm | Does What | Impact |\n|-----------|----------|--------|\n| Shor's | Factors large numbers | Breaks RSA |\n| Grover's | Searches unsorted data | 2x speedup on any search |\n| VQE | Simulates molecules | Drug discovery |\n| QAOA | Optimization | Logistics, finance |\n\n**Current state (2024):**\n- IBM: 1,121-qubit Condor\n- Google Willow: error correction below threshold\n- We're in the NISQ era — noisy, limited, but improving fast\n- Practical quantum advantage exists for specific chemistry problems\n\n**The honest take:** Quantum won't replace classical computers. They'll complement them for specific problem classes. Your laptop is safe.", tokens: tk() };
+  }
+
+  // REST API
+  if (lo.indexOf('rest api') > -1 || lo.indexOf('api design') > -1 || lo.indexOf('api best') > -1) {
+    return { text: "Production REST API design — the complete guide:\n\n**1. Resource Naming:**\n\n```\nGET    /api/v1/users          List\nGET    /api/v1/users/42       Get one\nPOST   /api/v1/users          Create\nPATCH  /api/v1/users/42       Update\nDELETE /api/v1/users/42       Delete\n```\n\n**2. Status Codes:**\n\n| Code | Meaning | When |\n|------|---------|------|\n| 200 | OK | Successful GET/PATCH |\n| 201 | Created | Successful POST |\n| 204 | No Content | Successful DELETE |\n| 400 | Bad Request | Validation failure |\n| 401 | Unauthorized | Missing auth |\n| 403 | Forbidden | Not allowed |\n| 404 | Not Found | Resource missing |\n| 409 | Conflict | Duplicate |\n| 429 | Too Many Requests | Rate limited |\n| 500 | Internal Error | Server bug |\n\n**3. Consistent Error Shape:**\n\n```json\n{\n  \"error\": {\n    \"code\": \"VALIDATION_ERROR\",\n    \"message\": \"Request validation failed\",\n    \"details\": [\n      { \"field\": \"email\", \"message\": \"Invalid email format\" }\n    ],\n    \"requestId\": \"req_abc123\"\n  }\n}\n```\n\n**4. Pagination:**\n\n```json\n{\n  \"data\": [...],\n  \"pagination\": {\n    \"page\": 2, \"perPage\": 20, \"total\": 156,\n    \"totalPages\": 8, \"hasNext\": true\n  }\n}\n```\n\n**5. Filtering + Sorting + Field Selection:**\n\n```\nGET /api/users?role=admin&sort=-createdAt&fields=id,name,email\n```\n\n**6. Rate Limit Headers:**\n\n```\nX-RateLimit-Limit: 100\nX-RateLimit-Remaining: 87\nX-RateLimit-Reset: 1705312200\n```\n\nI recommend URL path versioning (`/api/v1/`) — it's explicit, debuggable, and works with every client.", tokens: tk() };
+  }
+
+  // React / Next.js patterns
+  if ((lo.indexOf('react') > -1 && (lo.indexOf('pattern') > -1 || lo.indexOf('hook') > -1 || lo.indexOf('best') > -1)) || (lo.indexOf('next') > -1 && (lo.indexOf('15') > -1 || lo.indexOf('app') > -1))) {
+    return { text: "Essential Next.js 15 / React patterns for production:\n\n**1. Server Components by Default:**\n\n```tsx\n// Runs on SERVER — zero JS shipped to client\nasync function UserProfile({ userId }: { userId: string }) {\n  const user = await db.user.findUnique({ where: { id: userId } });\n  return <div>{user.name}</div>;\n}\n```\n\n**2. Client Components Only When Needed:**\n\n```tsx\n'use client';\nimport { useState } from 'react';\n\nexport function SearchBox() {\n  const [query, setQuery] = useState('');\n  return <input value={query} onChange={e => setQuery(e.target.value)} />;\n}\n```\n\n**3. Server Actions — No API Routes:**\n\n```tsx\n'use server';\nimport { revalidatePath } from 'next/cache';\n\nexport async function createPost(formData: FormData) {\n  await db.post.create({\n    data: { title: formData.get('title') as string }\n  });\n  revalidatePath('/posts');\n}\n```\n\n**4. Streaming with Suspense:**\n\n```tsx\nimport { Suspense } from 'react';\n\nexport default function Page() {\n  return (\n    <div>\n      <h1>Dashboard</h1>\n      <Suspense fallback={<Skeleton />}>\n        <SlowWidget />\n      </Suspense>\n    </div>\n  );\n}\n```\n\n**5. Parallel Data Fetching:**\n\n```tsx\n// BAD — waterfall\nconst user = await getUser();\nconst posts = await getPosts(user.id);\n\n// GOOD — parallel\nconst [user, posts] = await Promise.all([getUser(), getPosts(userId)]);\n```\n\n**Architecture:**\n\n| Layer | Tool | Purpose |\n|-------|------|--------|\n| Routing | App Router | File-based routing |\n| Data | Server Components | Zero JS for data |\n| State | Zustand | Client state |\n| Forms | React Hook Form + Zod | Validation |\n| Auth | NextAuth v5 | Authentication |\n| DB | Prisma | Type-safe queries |\n| Styling | Tailwind + shadcn/ui | Rapid UI |\n\nThe key: **push everything to the server.** Less JS shipped = faster app.", tokens: tk() };
+  }
+
+  // Auth / JWT
+  if (lo.indexOf('auth') > -1 || lo.indexOf('jwt') > -1 || lo.indexOf('security') > -1 || lo.indexOf('login') > -1) {
+    return { text: "Modern auth with NextAuth v5 + Prisma:\n\n```typescript\n// auth.ts\nimport NextAuth from 'next-auth';\nimport GitHub from 'next-auth/providers/github';\nimport { PrismaAdapter } from '@auth/prisma-adapter';\nimport { db } from '@/lib/db';\n\nexport const { handlers, auth, signIn, signOut } = NextAuth({\n  adapter: PrismaAdapter(db),\n  providers: [GitHub],\n  session: { strategy: 'jwt', maxAge: 24 * 60 * 60 },\n  callbacks: {\n    jwt: async ({ token, user }) => {\n      if (user) { token.role = user.role; token.tenantId = user.tenantId; }\n      return token;\n    },\n    session: async ({ session, token }) => {\n      session.user.role = token.role;\n      session.user.tenantId = token.tenantId;\n      return session;\n    },\n  },\n});\n```\n\n**Route protection middleware:**\n\n```typescript\n// middleware.ts\nexport default auth((req) => {\n  const isAuth = !!req.auth;\n  const isPublic = ['/login', '/api/auth'].some(p => req.nextUrl.pathname.startsWith(p));\n  if (!isAuth && !isPublic) {\n    return Response.redirect(new URL('/login', req.url));\n  }\n});\n```\n\n**JWT vs Session:**\n\n| Aspect | JWT | Session |\n|--------|-----|--------|\n| State | Stateless | Server state |\n| Revocation | Hard | Easy |\n| Scale | Easy | Needs store |\n| Mobile/API | Better | Harder |\n\n**Security checklist:**\n- Rate limit: 5 auth attempts/minute\n- bcrypt with cost factor 12+\n- HTTP-only cookies (never localStorage)\n- CSRF protection for cookie auth\n- Refresh token rotation\n- Log all auth events\n- Secure + SameSite=Lax cookies in production", tokens: tk() };
+  }
+
+  // Docker / deploy
+  if (lo.indexOf('docker') > -1 || lo.indexOf('deploy') > -1 || lo.indexOf('ci/cd') > -1 || lo.indexOf('production') > -1) {
+    return { text: "Production deployment for Next.js 15:\n\n```dockerfile\nFROM node:20-alpine AS base\nFROM base AS deps\nWORKDIR /app\nCOPY package.json pnpm-lock.yaml ./\nRUN corepack enable pnpm && pnpm install --frozen-lockfile\n\nFROM base AS builder\nWORKDIR /app\nCOPY --from=deps /app/node_modules ./node_modules\nCOPY . .\nRUN pnpm build\n\nFROM base AS runner\nWORKDIR /app\nENV NODE_ENV=production\nRUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs\nCOPY --from=builder /app/public ./public\nCOPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./\nCOPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static\nUSER nextjs\nEXPOSE 3000\nCMD [\"node\", \"server.js\"]\n```\n\n```yaml\n# docker-compose.yml\nservices:\n  app:\n    build: .\n    ports: [\"3000:3000\"]\n    environment:\n      DATABASE_URL: postgresql://postgres:secret@db:5432/moonai\n    depends_on:\n      db: { condition: service_healthy }\n  db:\n    image: postgres:16-alpine\n    environment: { POSTGRES_PASSWORD: secret }\n    volumes: [\"pgdata:/var/lib/postgresql/data\"]\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready\"]\n      interval: 5s\n  redis:\n    image: redis:7-alpine\nvolumes:\n  pgdata:\n```\n\n**Monitoring stack:**\n\n| Tool | Purpose |\n|------|--------|\n| Sentry | Error tracking |\n| Vercel Analytics | Web Vitals |\n| Grafana | Infrastructure metrics |\n| Axiom | Log aggregation |", tokens: tk() };
+  }
+
+  // CSS / Tailwind
+  if (lo.indexOf('css') > -1 || lo.indexOf('tailwind') > -1 || lo.indexOf('animation') > -1 || lo.indexOf('styling') > -1) {
+    return { text: "Advanced Tailwind patterns for production:\n\n**1. Component Variants with cva:**\n\n```typescript\nimport { cva } from 'class-variance-authority';\n\nconst button = cva(\n  'inline-flex items-center justify-center rounded-xl font-medium transition-all',\n  {\n    variants: {\n      intent: {\n        primary: 'bg-violet-600 text-white hover:bg-violet-700',\n        ghost: 'bg-transparent text-gray-400 hover:text-white',\n        danger: 'bg-red-500/10 text-red-400 hover:bg-red-500/20',\n      },\n      size: {\n        sm: 'px-3 py-1.5 text-sm',\n        md: 'px-4 py-2 text-sm',\n        lg: 'px-6 py-3 text-base',\n      },\n    },\n    defaultVariants: { intent: 'primary', size: 'md' },\n  }\n);\n```\n\n**2. Design Tokens in tailwind.config.ts:**\n\n```typescript\nexport default {\n  theme: {\n    extend: {\n      colors: {\n        brand: { 50: '#f0edff', 500: '#7c6cf0', 900: '#2d1f8e' },\n      },\n      animation: {\n        'fade-in': 'fadeIn .3s ease-out',\n        'glow': 'glow 3s ease-in-out infinite',\n      },\n    },\n  },\n};\n```\n\n**3. Micro-interactions that matter:**\n- Buttons: scale(1.02) hover, scale(0.98) active\n- Cards: translateY(-2px) + shadow on hover\n- Inputs: border-color + glow on focus\n- Loading: skeleton shimmer (not spinners)\n- Success: brief green flash\n- Errors: shake animation + red border\n\n**Performance:**\n- Only animate `transform` and `opacity` (GPU-composited)\n- Never animate `width`, `height`, `top`, `left`\n- Use `will-change` sparingly\n- Use `contain: layout` on isolated components", tokens: tk() };
+  }
+
+  // Greeting
+  if (lo.match(/^(hi|hello|hey|howdy|sup|yo|greetings|good)\b/)) {
+    return { text: "Hey! I'm Moon AI — your full-stack development companion.\n\nI can help with:\n\n- **Architecture** — Next.js 15, React patterns, system design\n- **Backend** — Prisma, PostgreSQL, REST APIs, authentication\n- **Frontend** — TypeScript, Tailwind CSS, animations, UX\n- **DevOps** — Docker, CI/CD, deployment, monitoring\n- **Concepts** — Quantum computing, algorithms, design patterns\n\nI give you real, runnable code — not pseudocode. Every snippet is copy-paste ready.\n\nWhat are you working on?", tokens: tk() };
+  }
+
+  // Who are you
+  if (lo.indexOf('who are you') > -1 || lo.indexOf('what are you') > -1 || lo.indexOf('about you') > -1) {
+    return { text: "I'm **Moon AI** — a full-stack conversational AI built as a real product:\n\n**My Stack:**\n\n| Layer | Technology |\n|-------|-----------|\n| Frontend | Next.js 15 + TypeScript + Tailwind + shadcn/ui |\n| AI SDK | Vercel AI SDK (streamText) |\n| Database | Prisma + PostgreSQL |\n| Auth | NextAuth v5 |\n| Deploy | Docker + Vercel |\n\n**In production, my API route looks like:**\n\n```typescript\nimport { streamText } from 'ai';\n\nexport async function POST(req: Request) {\n  const { messages } = await req.json();\n  const result = streamText({\n    model: moon(),\n    messages,\n  });\n  return result.toDataStreamResponse();\n}\n```\n\nHere, I simulate that with a local engine. Ask me anything.", tokens: tk() };
+  }
+
+  // Code / programming
+  if (lo.indexOf('code') > -1 || lo.indexOf('function') > -1 || lo.indexOf('javascript') > -1 || lo.indexOf('python') > -1 || lo.indexOf('algorithm') > -1 || lo.indexOf('program') > -1) {
+    return { text: "Here's a battle-tested API client with retry, timeout, and full type safety:\n\n```typescript\nclass ApiError extends Error {\n  constructor(public status: number, public code: string, message: string) {\n    super(message); this.name = 'ApiError';\n  }\n}\n\nexport class ApiClient {\n  private base: string;\n  private key: string;\n  private timeout: number;\n  private retries: number;\n\n  constructor(opts: { baseUrl: string; apiKey?: string; timeout?: number; retries?: number }) {\n    this.base = opts.baseUrl;\n    this.key = opts.apiKey || '';\n    this.timeout = opts.timeout || 10000;\n    this.retries = opts.retries || 3;\n  }\n\n  async request<T>(path: string, init: RequestInit = {}): Promise<T> {\n    const url = this.base + path;\n    const ac = new AbortController();\n    const timer = setTimeout(() => ac.abort(), this.timeout);\n\n    try {\n      const res = await this.retry(url, {\n        ...init,\n        signal: ac.signal,\n        headers: {\n          'Content-Type': 'application/json',\n          ...(this.key && { Authorization: 'Bearer ' + this.key }),\n          ...init.headers,\n        },\n      });\n      if (!res.ok) {\n        const body = await res.json().catch(() => ({}));\n        throw new ApiError(res.status, body.code || 'UNKNOWN', body.message || res.statusText);\n      }\n      return res.json();\n    } finally { clearTimeout(timer); }\n  }\n\n  private async retry(url: string, init: RequestInit, n = 1): Promise<Response> {\n    try {\n      const res = await fetch(url, init);\n      if (res.status >= 500 && n < this.retries) {\n        await new Promise(r => setTimeout(r, Math.min(1000 * Math.pow(2, n), 10000)));\n        return this.retry(url, init, n + 1);\n      }\n      return res;\n    } catch (err) {\n      if (n < this.retries) {\n        await new Promise(r => setTimeout(r, Math.min(1000 * Math.pow(2, n), 10000)));\n        return this.retry(url, init, n + 1);\n      }\n      throw err;\n    }\n  }\n\n  get<T>(p: string) { return this.request<T>(p); }\n  post<T>(p: string, b: unknown) { return this.request<T>(p, { method: 'POST', body: JSON.stringify(b) }); }\n  delete<T>(p: string) { return this.request<T>(p, { method: 'DELETE' }); }\n}\n```\n\n**Features:** exponential backoff with jitter, AbortController timeout, custom ApiError, generic types, zero dependencies.\n\nWant me to add caching or WebSocket support?", tokens: tk() };
+  }
+
+  // Default
+  var defs = [
+    "That's a great question. Let me give you a structured answer:\n\n**Regarding \"" + text.slice(0,40) + "\":**\n\n**1. Core Principle**\nEvery good solution starts with understanding the actual problem, not the symptom. Ask \"why\" three times before committing to an approach.\n\n**2. Trade-offs Are Inevitable**\n- Speed vs. correctness\n- Simplicity vs. flexibility\n- Consistency vs. availability\n\n**3. Practical Approach:**\n\n```\nObserve -> Hypothesize -> Test -> Iterate -> Ship\n```\n\n**4. Common Mistakes:**\n- Optimizing before measuring\n- Building for scale you don't have\n- Not documenting the \"why\"\n- Skipping error handling in v1\n\n**My recommendation:** Start with the simplest solution that could work. Get it in front of users. Let real data drive optimization, not assumptions.\n\nWhat specific aspect should I go deeper on?",
+    "Let me break this down:\n\n**\"" + text.slice(0,40) + "\"** — here's my analysis:\n\nMost technical decisions come down to three vectors:\n1. **Developer Experience** — How fast can you iterate?\n2. **User Experience** — How does it perform?\n3. **Operational Complexity** — How much to maintain?\n\n**My framework:**\n\n| Priority | Question | Impact |\n|----------|----------|--------|\n| 1 | Does it solve the problem? | Must-have |\n| 2 | Can your team maintain it? | High |\n| 3 | Will it scale to 10x? | Medium |\n| 4 | Is it the \"right\" architecture? | Low |\n\n**Actionable advice:**\n- Prototype the riskiest assumption first\n- Measure before optimizing\n- Document decisions and their context\n- Iterate on user feedback, not technical elegance\n\nThe best code is code your team can understand, change, and deploy confidently.\n\nWant me to apply this to your specific situation?",
+    "Good question — here's how I think about it:\n\n**\"" + text.slice(0,40) + "\"**\n\nThere are usually three levels:\n\n**Level 1: Surface Answer**\nThe obvious approach. Fast to implement, easy to understand. Works for simple cases.\n\n**Level 2: Production Answer**\nWhat you actually need when things get real:\n- Error handling that preserves context\n- Logging that helps debug 3am incidents\n- Graceful degradation when dependencies fail\n- Monitoring so you know before users do\n\n**Level 3: Scale Answer**\nWhat you need when things get big:\n- Distributed systems thinking\n- Eventual consistency\n- Caching with invalidation\n- Observability across services\n\n**The honest truth:** Most projects should aim for Level 2. Level 3 introduces complexity that only makes sense at scale. Premature distributed systems is a special kind of suffering.\n\nWhat's your situation — MVP or scaling existing traffic?"
+  ];
+
+  return { text: defs[Math.floor(Math.random() * defs.length)], tokens: tk() };
+}
+
+/* ===== FORMATTING ===== */
+function esc(t) {
+  var d = document.createElement('div');
+  d.textContent = t;
+  return d.innerHTML;
+}
+
+function hlCode(code, lang) {
+  var h = esc(code);
+  h = h.replace(/(\/\/.*$)/gm, '<span class="cc">$1</span>');
+  h = h.replace(/(#.*$)/gm, '<span class="cc">$1</span>');
+  h = h.replace(/(".*?"|'.*?')/g, '<span class="cs">$1</span>');
+  var kws = ['const','let','var','function','return','if','else','for','while','class','import','export','from','default','new','this','async','await','try','catch','throw','type','interface','enum','extends','model','datasource','generator','string','number','boolean','void','unknown','any','Promise','static','get','set','constructor','public','private','readonly'];
+  for (var i = 0; i < kws.length; i++) {
+    h = h.replace(new RegExp('\\b(' + kws[i] + ')\\b', 'g'), '<span class="ck">$1</span>');
+  }
+  h = h.replace(/\b(\d+\.?\d*)\b/g, '<span class="cn">$1</span>');
+  h = h.replace(/\b([a-zA-Z_]\w*)\s*\(/g, '<span class="cf">$1</span>(');
+  h = h.replace(/(@\w+)/g, '<span class="ct">$1</span>');
+  return h;
+}
+
+function fmtMd(text) {
+  // Code blocks
+  text = text.replace(/```(\w*)\n?([\s\S]*?)```/g, function(_, lang, code) {
+    return '<div class="cb"><div class="ch"><span>' + (lang||'code') + '</span><button onclick="cpCode(this)" style="color:var(--ac2);cursor:pointer;background:none;border:none;font-size:11px;font-family:inherit"><i class="far fa-copy"></i> Copy</button></div><pre>' + hlCode(code.trim(), lang) + '</pre></div>';
+  });
+  // Inline code
+  text = text.replace(/`([^`]+)`/g, '<code style="background:var(--bg0);padding:1px 5px;border-radius:4px;font-family:JetBrains Mono,monospace;font-size:12px;color:var(--ac2)">$1</code>');
+  // Bold
+  text = text.replace(/\*\*([^*]+)\*\*/g, '<strong style="color:var(--t1);font-weight:600">$1</strong>');
+  // Italic
+  text = text.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>');
+  // Tables
+  text = text.replace(/\n(\|.+\|)\n(\|[-| :]+\|)\n((?:\|.+\|\n?)+)/g, function(match, hdr, sep, body) {
+    var hCells = hdr.split('|').filter(function(c){return c.trim()});
+    var rows = body.trim().split('\n').map(function(r){return r.split('|').filter(function(c){return c.trim()})});
+    var t = '<table class="tbl"><thead><tr>';
+    for (var i = 0; i < hCells.length; i++) t += '<th>' + hCells[i].trim() + '</th>';
+    t += '</tr></thead><tbody>';
+    for (var i = 0; i < rows.length; i++) {
+      t += '<tr>';
+      for (var j = 0; j < rows[i].length; j++) t += '<td>' + rows[i][j].trim() + '</td>';
+      t += '</tr>';
+    }
+    t += '</tbody></table>';
+    return t;
+  });
+  // Line breaks
+  text = text.replace(/\n/g, '<br>');
+  // Unordered list
+  text = text.replace(/^- (.+)/gm, '<span style="display:flex;gap:6px;margin:2px 0"><span style="color:var(--ac2)">&#8226;</span><span>$1</span></span>');
+  // Ordered list
+  text = text.replace(/^(\d+)\. (.+)/gm, '<span style="display:flex;gap:6px;margin:2px 0"><span style="color:var(--ac2);font-weight:600">$1.</span><span>$2</span></span>');
+  return text;
+}
+
+/* ===== RENDERING ===== */
+function rSb() {
+  var box = document.getElementById('clist');
+  var q = (document.getElementById('sbox').value || '').toLowerCase();
+  var filt = S.convos.filter(function(c) { return c.title.toLowerCase().indexOf(q) > -1; });
+
+  if (!filt.length) {
+    box.innerHTML = '<div style="text-align:center;padding:30px 0"><i class="fas fa-comments" style="font-size:22px;color:var(--t3);margin-bottom:8px;display:block"></i><p style="font-size:12px;color:var(--t3)">' + (q ? 'No matches' : 'No conversations yet') + '</p></div>';
+    return;
+  }
+
+  var now = Date.now(), day = 86400000;
+  var g = { today: [], yesterday: [], older: [] };
+  for (var i = 0; i < filt.length; i++) {
+    var d = Math.floor((now - filt[i].uat) / day);
+    if (d < 1) g.today.push(filt[i]);
+    else if (d < 2) g.yesterday.push(filt[i]);
+    else g.older.push(filt[i]);
+  }
+
+  var html = '';
+  function gr(label, arr) {
+    if (!arr.length) return '';
+    var s = '<div style="font-size:11px;font-weight:500;padding:8px 8px 4px;color:var(--t3)">' + label + '</div>';
+    for (var i = 0; i < arr.length; i++) {
+      var c = arr[i];
+      var act = c.id === S.aid;
+      var cnt = c.msgs.length;
+      s += '<div class="si ' + (act?'on':'') + '" style="padding:9px 10px;cursor:pointer;display:flex;align-items:center;gap:8px;margin-bottom:3px" onclick="swCh(\'' + c.id + '\')">';
+      s += '<i class="fas fa-message" style="font-size:11px;flex-shrink:0;color:' + (act?'var(--ac2)':'var(--t3)') + '"></i>';
+      s += '<div style="flex:1;min-width:0"><div style="font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(c.title) + '</div><div style="font-size:11px;color:var(--t3)">' + cnt + ' msg' + (cnt!==1?'s':'') + '</div></div>';
+      s += '<button onclick="event.stopPropagation();dlCh(\'' + c.id + '\')" style="width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;opacity:0;color:var(--t3);background:none;border:none;cursor:pointer;transition:opacity .2s" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0" aria-label="Delete"><i class="fas fa-trash" style="font-size:10px"></i></button>';
+      s += '</div>';
+    }
+    return s;
+  }
+  html += gr('Today', g.today);
+  html += gr('Yesterday', g.yesterday);
+  html += gr('Previous', g.older);
+  box.innerHTML = html;
+}
+
+function rMsgs() {
+  var area = document.getElementById('marea');
+  var wel = document.getElementById('wblk');
+  // Remove old messages
+  var old = area.querySelectorAll('.mr');
+  for (var i = 0; i < old.length; i++) old[i].remove();
+
+  var conv = dbGet(S.aid);
+  if (!conv || !conv.msgs.length) { wel.style.display = 'flex'; return; }
+  wel.style.display = 'none';
+
+  var html = '';
+  for (var i = 0; i < conv.msgs.length; i++) {
+    var m = conv.msgs[i];
+    if (m.role === 'user') {
+      html += '<div class="mr msg-u" data-id="' + m.id + '" style="display:flex;justify-content:flex-end;margin-bottom:14px">';
+      html += '<div style="display:flex;align-items:flex-start;gap:10px;max-width:78%">';
+      html += '<div class="bbl" style="border-radius:16px 16px 4px 16px;padding:12px 16px"><p style="font-size:14px;line-height:1.6;color:#fff">' + esc(m.content) + '</p></div>';
+      html += '<div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:linear-gradient(135deg,var(--ac),#5f4fd8);color:#fff">U</div>';
+      html += '</div></div>';
+    } else {
+      html += '<div class="mr msg-a" data-id="' + m.id + '" style="display:flex;justify-content:flex-start;margin-bottom:14px">';
+      html += '<div style="display:flex;align-items:flex-start;gap:10px;max-width:84%">';
+      html += '<div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 35% 35%,#e8e8ff,#b0b0d0);box-shadow:0 0 8px rgba(200,200,240,.1)"><i class="fas fa-moon" style="font-size:10px;color:var(--bg0)"></i></div>';
+      html += '<div class="bbl" style="border-radius:16px 16px 16px 4px;padding:12px 16px">';
+      html += '<div class="mf" style="font-size:14px;line-height:1.6">' + fmtMd(m.content) + '</div>';
+      html += '<div style="display:flex;align-items:center;gap:12px;margin-top:8px;padding-top:8px;border-top:1px solid var(--bd)">';
+      html += '<button onclick="cpMsg(\'' + m.id + '\')" style="font-size:11px;display:flex;align-items:center;gap:4px;color:var(--t3);background:none;border:none;cursor:pointer;font-family:inherit" onmouseover="this.style.color=\'var(--ac2)\'" onmouseout="this.style.color=\'var(--t3)\'"><i class="far fa-copy"></i> Copy</button>';
+      html += '<button onclick="regen(\'' + m.id + '\')" style="font-size:11px;display:flex;align-items:center;gap:4px;color:var(--t3);background:none;border:none;cursor:pointer;font-family:inherit" onmouseover="this.style.color=\'var(--ac2)\'" onmouseout="this.style.color=\'var(--t3)\'"><i class="fas fa-rotate"></i> Regenerate</button>';
+      html += '<span style="font-size:11px;color:var(--t3)">' + m.tokens + ' tokens</span>';
+      html += '</div></div></div></div>';
+    }
+  }
+  area.insertAdjacentHTML('beforeend', html);
+  sDown();
+}
+
+function sDown() {
+  var el = document.getElementById('mscr');
+  requestAnimationFrame(function() { el.scrollTop = el.scrollHeight; });
+}
+
+/* ===== STREAMING ===== */
+function doStream(cid, text, tokens) {
+  S.strm = true;
+  rfBtn();
+
+  var area = document.getElementById('marea');
+
+  var row = document.createElement('div');
+  row.className = 'mr msg-a';
+  row.style.cssText = 'display:flex;justify-content:flex-start;margin-bottom:14px';
+  row.innerHTML = '<div style="display:flex;align-items:flex-start;gap:10px;max-width:84%">' +
+    '<div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 35% 35%,#e8e8ff,#b0b0d0);box-shadow:0 0 8px rgba(200,200,240,.1)"><i class="fas fa-moon" style="font-size:10px;color:var(--bg0)"></i></div>' +
+    '<div class="bbl" style="border-radius:16px 16px 16px 4px;padding:12px 16px;min-width:44px"><div id="stgt" style="font-size:14px;line-height:1.6"><div style="display:flex;align-items:center;gap:5px;padding:3px 0"><div class="dot1"></div><div class="dot2"></div><div class="dot3"></div></div></div></div>' +
+    '</div>';
+  area.appendChild(row);
+  sDown();
+
+  // Start streaming after a brief typing indicator
+  setTimeout(function() {
+    var tgt = document.getElementById('stgt');
+    if (!tgt) { S.strm = false; rfBtn(); return; }
+
+    var chars = text.split('');
+    var built = '';
+    var idx = 0;
+
+    function next() {
+      if (!S.strm || idx >= chars.length) {
+        finishStream(tgt, row, built, tokens, cid);
+        return;
+      }
+      built += chars[idx];
+      tgt.innerHTML = fmtMd(built) + '<span class="stcur"></span>';
+      if (idx % 6 === 0) sDown();
+      var ch = chars[idx];
+      var delay = ch === '\n' ? 35 : ch === '.' || ch === '!' || ch === '?' ? 50 : ch === ',' ? 20 : ch === ' ' ? 6 : 10 + Math.random() * 8;
+      idx++;
+      setTimeout(next, delay);
+    }
+    next();
+  }, 400);
+}
+
+function finishStream(tgt, row, built, tokens, cid) {
+  tgt.innerHTML = fmtMd(built);
+  tgt.removeAttribute('id');
+
+  var msgId = 'm' + Date.now();
+  row.setAttribute('data-id', msgId);
+
+  var bbl = row.querySelector('.bbl');
+  var bar = document.createElement('div');
+  bar.style.cssText = 'display:flex;align-items:center;gap:12px;margin-top:8px;padding-top:8px;border-top:1px solid var(--bd)';
+  bar.innerHTML = '<button onclick="cpMsg(\'' + msgId + '\')" style="font-size:11px;display:flex;align-items:center;gap:4px;color:var(--t3);background:none;border:none;cursor:pointer;font-family:inherit" onmouseover="this.style.color=\'var(--ac2)\'" onmouseout="this.style.color=\'var(--t3)\'"><i class="far fa-copy"></i> Copy</button>' +
+    '<button onclick="regen(\'' + msgId + '\')" style="font-size:11px;display:flex;align-items:center;gap:4px;color:var(--t3);background:none;border:none;cursor:pointer;font-family:inherit" onmouseover="this.style.color=\'var(--ac2)\'" onmouseout="this.style.color=\'var(--t3)\'"><i class="fas fa-rotate"></i> Regenerate</button>' +
+    '<span style="font-size:11px;color:var(--t3)">' + tokens + ' tokens</span>';
+  bbl.appendChild(bar);
+
+  dbAddMsg(cid, 'assistant', built, tokens);
+  S.ttk += tokens;
+  document.getElementById('tkC').textContent = S.ttk.toLocaleString() + ' tokens';
+
+  S.strm = false;
+  rfBtn();
+  sDown();
+  rSb();
+}
+
+/* ===== ACTIONS ===== */
+function doSend() {
+  var inp = document.getElementById('minp');
+  var text = inp.value.trim();
+  if (!text || S.strm) return;
+
+  if (!S.aid) {
+    var c = dbNewConvo(text.length > 44 ? text.slice(0,44) + '...' : text);
+    S.aid = c.id;
+  }
+
+  dbAddMsg(S.aid, 'user', text, Math.ceil(text.split(/\s+/).length * 1.3));
+  S.ttk += Math.ceil(text.split(/\s+/).length * 1.3);
+
+  var conv = dbGet(S.aid);
+  if (conv) document.getElementById('htit').textContent = conv.title;
+  document.getElementById('tkC').textContent = S.ttk.toLocaleString() + ' tokens';
+
+  inp.value = '';
+  inp.style.height = 'auto';
+  rfBtn();
+  rMsgs();
+  rSb();
+
+  var resp = aiRespond(text);
+  doStream(S.aid, resp.text, resp.tokens);
+}
+
+function useSug(text) {
+  document.getElementById('minp').value = text;
+  rfBtn();
+  doSend();
+}
+
+function nwCh() {
+  var c = dbNewConvo();
+  S.aid = c.id;
+  document.getElementById('htit').textContent = c.title;
+  rSb(); rMsgs();
+  document.getElementById('minp').focus();
+  tst('New conversation created', 'success');
+}
+
+function swCh(id) {
+  S.aid = id;
+  var c = dbGet(id);
+  if (c) {
+    document.getElementById('htit').textContent = c.title;
+    document.getElementById('hmod').textContent = fmMod(c.model || S.model);
+  }
+  rSb(); rMsgs();
+  document.getElementById('sb').classList.remove('op');
+}
+
+function dlCh(id) {
+  dbDel(id);
+  if (S.aid === id) {
+    S.aid = S.convos.length ? S.convos[0].id : null;
+    if (S.aid) {
+      var c = dbGet(S.aid);
+      document.getElementById('htit').textContent = c ? c.title : 'New Conversation';
+    } else {
+      document.getElementById('htit').textContent = 'New Conversation';
+    }
+  }
+  rSb(); rMsgs();
+  tst('Conversation deleted', 'info');
+}
+
+function regen(msgId) {
+  if (S.strm) return;
+  var conv = dbGet(S.aid);
+  if (!conv) return;
+  var idx = -1;
+  for (var i = 0; i < conv.msgs.length; i++) {
+    if (conv.msgs[i].id === msgId) { idx = i; break; }
+  }
+  if (idx < 0) return;
+  var removed = conv.msgs.splice(idx);
+  for (var i = 0; i < removed.length; i++) S.ttk -= removed[i].tokens;
+  S.ttk = Math.max(0, S.ttk);
+  document.getElementById('tkC').textContent = S.ttk.toLocaleString() + ' tokens';
+  dbSave();
+  rMsgs();
+
+  var lastUser = null;
+  for (var i = conv.msgs.length - 1; i >= 0; i--) {
+    if (conv.msgs[i].role === 'user') { lastUser = conv.msgs[i]; break; }
+  }
+  if (lastUser) {
+    var resp = aiRespond(lastUser.content);
+    doStream(S.aid, resp.text, resp.tokens);
+  }
+}
+
+function rfBtn() {
+  var btn = document.getElementById('sbtn');
+  var inp = document.getElementById('minp');
+  if (inp.value.trim() && !S.strm) {
+    btn.classList.remove('off');
+  } else {
+    btn.classList.add('off');
+  }
+}
+
+function fmMod(m) {
+  var names = { 'moon-4o': 'Moon 4o', 'moon-4o-mini': 'Moon 4o Mini', 'moon-pro': 'Moon Pro', 'moon-vision': 'Moon Vision' };
+  return names[m] || m;
+}
+
+/* ===== SETTINGS ===== */
+function opSet() {
+  document.getElementById('smod').style.display = 'block';
+  document.getElementById('tvS').value = S.temp;
+  document.getElementById('tvE').textContent = S.temp;
+  document.getElementById('tkS').value = S.maxTk;
+  document.getElementById('tkE').textContent = S.maxTk;
+  document.getElementById('spT').value = S.sys;
+
+  var grid = document.getElementById('mgrid');
+  var models = [
+    { id: 'moon-4o', name: 'Moon 4o', desc: 'Most capable' },
+    { id: 'moon-4o-mini', name: 'Moon 4o Mini', desc: 'Fast & efficient' },
+    { id: 'moon-pro', name: 'Moon Pro', desc: 'Deep reasoning' },
+    { id: 'moon-vision', name: 'Moon Vision', desc: 'Multimodal' }
+  ];
+  var ghtml = '';
+  for (var i = 0; i < models.length; i++) {
+    ghtml += '<div class="mo ' + (models[i].id === S.model ? 'pk' : '') + '" data-m="' + models[i].id + '" onclick="pkMod(this)"><div style="font-weight:600;font-size:13px">' + models[i].name + '</div><div style="font-size:11px;margin-top:2px;color:var(--t3)">' + models[i].desc + '</div></div>';
+  }
+  grid.innerHTML = ghtml;
+}
+
+function clSet() { document.getElementById('smod').style.display = 'none'; }
+
+function pkMod(el) {
+  var all = document.querySelectorAll('#mgrid .mo');
+  for (var i = 0; i < all.length; i++) all[i].classList.remove('pk');
+  el.classList.add('pk');
+  S.model = el.getAttribute('data-m');
+  document.getElementById('hmod').textContent = fmMod(S.model);
+  dbSave();
+  tst('Model: ' + fmMod(S.model), 'success');
+}
+
+function clrAll() {
+  localStorage.removeItem('moonai3');
+  S.convos = []; S.aid = null; S.ttk = 0;
+  document.getElementById('htit').textContent = 'New Conversation';
+  document.getElementById('tkC').textContent = '0 tokens';
+  rSb(); rMsgs(); clSet();
+  tst('All data cleared', 'info');
+}
+
+/* ===== UTILS ===== */
+function cpMsg(id) {
+  var el = document.querySelector('[data-id="' + id + '"] .mf');
+  if (!el) return;
+  navigator.clipboard.writeText(el.innerText || el.textContent).then(function() { tst('Copied to clipboard', 'success'); });
+}
+
+function cpCode(btn) {
+  var pre = btn.closest('.cb').querySelector('pre');
+  if (!pre) return;
+  navigator.clipboard.writeText(pre.textContent).then(function() {
+    btn.innerHTML = '<i class="fas fa-check"></i> Copied';
+    setTimeout(function() { btn.innerHTML = '<i class="far fa-copy"></i> Copy'; }, 1500);
+  });
+}
+
+function tst(msg, type) {
+  var box = document.getElementById('tbox');
+  var colors = { success: 'var(--gn)', error: 'var(--rd)', info: 'var(--ac2)', warning: 'var(--yw)' };
+  var icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle', warning: 'fa-exclamation-triangle' };
+  var el = document.createElement('div');
+  el.className = 'toast';
+  el.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:11px;font-size:13px;background:var(--bg3);border:1px solid var(--bd);color:var(--t1);min-width:190px;box-shadow:0 8px 28px rgba(0,0,0,.5)';
+  el.innerHTML = '<i class="fas ' + (icons[type]||icons.info) + '" style="color:' + (colors[type]||colors.info) + '"></i><span>' + msg + '</span>';
+  box.appendChild(el);
+  setTimeout(function() {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(-8px)';
+    el.style.transition = 'all .25s';
+    setTimeout(function() { el.remove(); }, 250);
+  }, 2400);
+}
+
+/* ===== INIT ===== */
+(function() {
+  // Stars
+  var sf = document.getElementById('sf');
+  for (var i = 0; i < 55; i++) {
+    var s = document.createElement('div');
+    s.className = 'star';
+    s.style.left = Math.random()*100+'%';
+    s.style.top = Math.random()*100+'%';
+    s.style.setProperty('--d', (2+Math.random()*5)+'s');
+    s.style.setProperty('--dl', Math.random()*5+'s');
+    var sz = (1+Math.random()*1.5)+'px';
+    s.style.width = sz;
+    s.style.height = sz;
+    sf.appendChild(s);
+  }
+
+  // Load DB
+  dbLoad();
+  if (S.convos.length) {
+    S.aid = S.convos[0].id;
+    var c = dbGet(S.aid);
+    if (c) {
+      document.getElementById('htit').textContent = c.title;
+      document.getElementById('hmod').textContent = fmMod(c.model || S.model);
+    }
+  }
+  rSb(); rMsgs();
+
+  // Input handling
+  var inp = document.getElementById('minp');
+
+  inp.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 170) + 'px';
+    rfBtn();
+  });
+
+  inp.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      doSend();
+    }
+  });
+
+  // Send button
+  document.getElementById('sbtn').addEventListener('click', function(e) {
+    e.preventDefault();
+    doSend();
+  });
+
+  // Settings sliders
+  document.getElementById('tvS').addEventListener('input', function() {
+    S.temp = parseFloat(this.value);
+    document.getElementById('tvE').textContent = this.value;
+    dbSave();
+  });
+  document.getElementById('tkS').addEventListener('input', function() {
+    S.maxTk = parseInt(this.value);
+    document.getElementById('tkE').textContent = this.value;
+    dbSave();
+  });
+  document.getElementById('spT').addEventListener('input', function() {
+    S.sys = this.value;
+    dbSave();
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); nwCh(); }
+    if (e.key === 'Escape') { clSet(); document.getElementById('sb').classList.remove('op'); }
+  });
+
+  // Mobile menu
+  function ckMob() {
+    var b = document.getElementById('mbtn');
+    b.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
+    if (window.innerWidth > 768) document.getElementById('sb').classList.remove('op');
+  }
+  ckMob();
+  window.addEventListener('resize', ckMob);
+
+  // Token count
+  var tt = 0;
+  for (var i = 0; i < S.convos.length; i++) {
+    for (var j = 0; j < S.convos[i].msgs.length; j++) {
+      tt += (S.convos[i].msgs[j].tokens || 0);
+    }
+  }
+  S.ttk = tt;
+  document.getElementById('tkC').textContent = tt.toLocaleString() + ' tokens';
+
+  inp.focus();
+})();
+</script>
+</body>
+</html>
